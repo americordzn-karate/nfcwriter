@@ -1,1 +1,205 @@
-aqui
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Programar NFC</title>
+
+<style>
+
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background: #f2f2f2;
+    padding: 30px;
+}
+
+.card {
+
+    background:white;
+    max-width:400px;
+    margin:auto;
+    padding:25px;
+    border-radius:15px;
+    box-shadow:0 3px 10px rgba(0,0,0,.2);
+
+}
+
+h2 {
+    margin-bottom:25px;
+}
+
+.nombre {
+
+    font-size:24px;
+    font-weight:bold;
+
+}
+
+.id {
+
+    margin-top:10px;
+    color:#555;
+    font-size:18px;
+
+}
+
+button {
+
+    margin-top:30px;
+    padding:15px 30px;
+    font-size:18px;
+    border:none;
+    border-radius:10px;
+    background:#1565c0;
+    color:white;
+
+}
+
+.estado {
+
+    margin-top:25px;
+    font-size:18px;
+    font-weight:bold;
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="card">
+
+<h2>
+PROGRAMAR TARJETA NFC
+</h2>
+
+
+<div class="nombre" id="nombre">
+</div>
+
+
+<div class="id" id="idAlumno">
+</div>
+
+
+<button onclick="grabarNFC()">
+GRABAR TARJETA
+</button>
+
+
+<div class="estado" id="estado">
+Esperando...
+</div>
+
+
+</div>
+
+
+
+<script>
+
+
+// Obtener datos enviados desde AppSheet
+
+const parametros = new URLSearchParams(window.location.search);
+
+
+const idAlumno = parametros.get("id");
+
+const nombre = parametros.get("nombre");
+
+
+
+document.getElementById("nombre").innerHTML =
+nombre || "Sin nombre";
+
+
+document.getElementById("idAlumno").innerHTML =
+"ID: " + idAlumno;
+
+
+
+async function grabarNFC(){
+
+
+    if(!("NDEFReader" in window)){
+
+
+        document.getElementById("estado").innerHTML =
+        "❌ Web NFC no disponible";
+
+
+        return;
+
+    }
+
+
+
+    try{
+
+
+        document.getElementById("estado").innerHTML =
+        "📡 Acerque la tarjeta...";
+
+
+
+        const ndef = new NDEFReader();
+
+
+
+        await ndef.write({
+
+            records:[
+
+                {
+
+                    recordType:"text",
+
+                    data:idAlumno
+
+                }
+
+            ]
+
+        });
+
+
+
+        navigator.vibrate(200);
+
+
+
+        document.getElementById("estado").innerHTML =
+        "✅ Tarjeta programada";
+
+
+    }
+
+
+    catch(error){
+
+
+        document.getElementById("estado").innerHTML =
+        "❌ Error: " + error.message;
+
+
+    }
+
+
+}
+
+
+</script>
+
+
+</body>
+
+</html>
