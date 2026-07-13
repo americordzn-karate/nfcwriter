@@ -13,62 +13,94 @@
 body {
     font-family: Arial, sans-serif;
     text-align: center;
-    background: #f2f2f2;
+    background: #111111;
     padding: 30px;
+    margin: 0;
 }
+
 
 .card {
 
-    background:white;
-    max-width:400px;
-    margin:auto;
-    padding:25px;
-    border-radius:15px;
-    box-shadow:0 3px 10px rgba(0,0,0,.2);
+    background: #ffffff;
+    max-width: 400px;
+    margin: auto;
+    padding: 30px 25px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,.35);
 
 }
+
+
+.logo {
+
+    width: 150px;
+    margin-bottom: 20px;
+
+}
+
 
 h2 {
-    margin-bottom:25px;
+
+    margin-top: 0;
+    color: #111111;
+    font-size: 24px;
+
 }
+
 
 .nombre {
 
-    font-size:24px;
-    font-weight:bold;
+    font-size: 25px;
+    font-weight: bold;
+    color: #111111;
+    margin-top: 20px;
 
 }
+
 
 .id {
 
-    margin-top:10px;
-    color:#555;
-    font-size:18px;
+    margin-top: 10px;
+    color: #555555;
+    font-size: 18px;
 
 }
+
 
 button {
 
-    margin-top:30px;
-    padding:15px 30px;
-    font-size:18px;
-    border:none;
-    border-radius:10px;
-    background:#1565c0;
-    color:white;
+    margin-top: 30px;
+    padding: 16px 35px;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    border-radius: 10px;
+    background: #D4A017;
+    color: #000000;
+    cursor: pointer;
+    box-shadow: 0 3px 8px rgba(0,0,0,.25);
 
 }
+
+
+button:active {
+
+    transform: scale(.97);
+
+}
+
 
 .estado {
 
-    margin-top:25px;
-    font-size:18px;
-    font-weight:bold;
+    margin-top: 25px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #111111;
 
 }
 
-</style>
 
+</style>
 </head>
 
 
@@ -76,6 +108,8 @@ button {
 
 
 <div class="card">
+
+<img src="https://raw.githubusercontent.com/americordzn-karate/asistencia/main/Escudo%20Circulo%20PNG.png" class="logo">
 
 <h2>
 PROGRAMAR TARJETA NFC
@@ -91,7 +125,7 @@ PROGRAMAR TARJETA NFC
 
 
 <button onclick="grabarNFC()">
-GRABAR TARJETA
+PROGRAMAR TARJETA NFC
 </button>
 
 
