@@ -216,7 +216,7 @@ async function grabarNFC(){
 
         document.getElementById("estado").innerHTML =
         "✅ Tarjeta programada";
-
+document.getElementById("regresar").style.display = "inline-block";
 
     }
 
@@ -233,6 +233,11 @@ async function grabarNFC(){
 
 }
 
+    function regresarApp(){
+
+    window.history.back();
+
+}
 
 </script>
 
