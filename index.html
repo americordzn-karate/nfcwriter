@@ -338,7 +338,10 @@ function generarQR(){
 
 function componerImagenFinal(){
 
-    const imgQR = qrOculto.querySelector("img") || qrOculto.querySelector("canvas");
+    // Se usa el <canvas> que dibuja QRCode.js, no el <img>: el canvas está
+    // listo de inmediato, mientras que el <img> puede tardar una fracción
+    // de segundo en terminar de cargarse y dejaría el QR en blanco.
+    const imgQR = qrOculto.querySelector("canvas") || qrOculto.querySelector("img");
 
     if(!imgQR){
 
