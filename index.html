@@ -8,6 +8,12 @@
 
 <title>Programar NFC</title>
 
+<!-- ================================
+     BIBLIOTECA PARA GENERAR CÓDIGOS QR
+     (QRCode.js: dibuja un código QR dentro de un elemento de la página)
+================================ -->
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+
 <style>
 
 body {
@@ -89,6 +95,14 @@ button:active {
 
 }
 
+/* Botón del QR, en un color distinto para diferenciarlo del de NFC */
+#btnQR {
+
+    background: #2d7dd2;
+    color: #ffffff;
+
+}
+
 
 .estado {
 
@@ -96,6 +110,23 @@ button:active {
     font-size: 18px;
     font-weight: bold;
     color: #111111;
+
+}
+
+/* Vista previa del QR generado, dentro de la tarjeta */
+#previaQR {
+
+    display: none;
+    margin-top: 25px;
+
+}
+
+#previaQR img {
+
+    width: 220px;
+    height: 220px;
+    border: 1px solid #dddddd;
+    border-radius: 10px;
 
 }
 
@@ -136,6 +167,24 @@ Esperando...
     <button id="regresar" onclick="regresarApp()" style="display:none;">
 REGRESAR A APP
 </button>
+
+<!-- ================================
+     BOTÓN Y VISTA PREVIA PARA GENERAR EL QR
+================================ -->
+
+<button id="btnQR" onclick="generarQR()">
+GENERAR QR PARA IMPRIMIR
+</button>
+
+<div id="previaQR">
+    <img id="imagenPreviaQR" alt="Código QR generado">
+</div>
+
+<!-- Elemento oculto donde QRCode.js dibuja el código QR original -->
+<div id="qrOculto" style="display:none;"></div>
+
+<!-- Lienzo oculto donde se compone la imagen final de 800x800 con el nombre -->
+<canvas id="lienzoQR" width="800" height="800" style="display:none;"></canvas>
 
 </div>
 
@@ -236,6 +285,115 @@ document.getElementById("regresar").style.display = "inline-block";
     function regresarApp(){
 
     window.location.href = "https://www.appsheet.com/start/ebc837fc-900c-4559-ba3e-ca02b965e134";
+
+}
+
+/*
+==================================================
+GENERAR CÓDIGO QR PARA IMPRIMIR
+==================================================
+Este bloque toma el mismo idAlumno que ya se usa para
+programar la tarjeta NFC y genera, a partir de él, una
+imagen JPG de 800x800 píxeles con el código QR arriba
+y el nombre del alumno escrito debajo, lista para
+descargar e imprimir.
+==================================================
+*/
+
+const qrOculto = document.getElementById("qrOculto");
+const lienzoQR = document.getElementById("lienzoQR");
+const contextoLienzo = lienzoQR.getContext("2d");
+const previaQR = document.getElementById("previaQR");
+const imagenPreviaQR = document.getElementById("imagenPreviaQR");
+
+function generarQR(){
+
+    if(!idAlumno){
+
+        alert("No se encontró el ID del alumno en el enlace");
+        return;
+
+    }
+
+    // Limpiar cualquier QR generado previamente en este elemento oculto
+    qrOculto.innerHTML = "";
+
+    // Generar el código QR a alta resolución (400x400) usando el ID del alumno.
+    // Se genera más grande de lo que se verá para que no pierda nitidez
+    // al componerlo dentro de la imagen final de 800x800.
+    new QRCode(qrOculto, {
+
+        text: idAlumno,
+        width: 560,
+        height: 560,
+        correctLevel: QRCode.CorrectLevel.H
+
+    });
+
+    // QRCode.js tarda un instante en dibujar la imagen internamente,
+    // por lo que se espera un momento breve antes de leerla.
+    setTimeout(componerImagenFinal, 250);
+
+}
+
+function componerImagenFinal(){
+
+    const imgQR = qrOculto.querySelector("img") || qrOculto.querySelector("canvas");
+
+    if(!imgQR){
+
+        alert("No se pudo generar el código QR, intenta de nuevo");
+        return;
+
+    }
+
+    // Fondo blanco de 800x800, listo para imprimir
+    contextoLienzo.fillStyle = "#ffffff";
+    contextoLienzo.fillRect(0, 0, 800, 800);
+
+    // Dibujar el código QR centrado horizontalmente, en la parte superior
+    const tamanoQR = 560;
+    const margenX = (800 - tamanoQR) / 2;
+    const margenYArriba = 70;
+
+    contextoLienzo.drawImage(imgQR, margenX, margenYArriba, tamanoQR, tamanoQR);
+
+    // Escribir el nombre del alumno debajo del QR
+    const textoNombre = nombre || "Sin nombre";
+
+    contextoLienzo.fillStyle = "#111111";
+    contextoLienzo.textAlign = "center";
+    contextoLienzo.font = "bold 42px Arial";
+
+    const posicionYTexto = margenYArriba + tamanoQR + 70;
+
+    // Si el nombre es muy largo, se reduce el tamaño de letra para que quepa
+    let tamanoLetra = 42;
+    contextoLienzo.font = "bold " + tamanoLetra + "px Arial";
+
+    while(contextoLienzo.measureText(textoNombre).width > 720 && tamanoLetra > 20){
+
+        tamanoLetra -= 2;
+        contextoLienzo.font = "bold " + tamanoLetra + "px Arial";
+
+    }
+
+    contextoLienzo.fillText(textoNombre, 400, posicionYTexto);
+
+    // Convertir el lienzo a imagen JPG
+    const datosImagen = lienzoQR.toDataURL("image/jpeg", 0.95);
+
+    // Mostrar una vista previa pequeña dentro de la tarjeta
+    imagenPreviaQR.src = datosImagen;
+    previaQR.style.display = "block";
+
+    // Descargar automáticamente el archivo JPG al dispositivo
+    const enlaceDescarga = document.createElement("a");
+    enlaceDescarga.href = datosImagen;
+    enlaceDescarga.download = "QR_" + (idAlumno || "alumno") + ".jpg";
+    document.body.appendChild(enlaceDescarga);
+    enlaceDescarga.click();
+    document.body.removeChild(enlaceDescarga);
 
 }
 
